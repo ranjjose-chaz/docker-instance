@@ -1,0 +1,31 @@
+name: Ubuntu Basic Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # ⬇️ Add these two steps here
+      - name: Test Docker availability
+        run: docker info
+
+      - name: Run a test container
+        run: docker run hello-world
+      # ⬆️ This confirms Docker is working inside the GitHub runner
+
+      # Your test step (optional until you add Spring Boot)
+      - name: Run tests
+        run: ./mvnw -q test
