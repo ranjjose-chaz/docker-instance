@@ -1,0 +1,33 @@
+name: Windows Testcontainers CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest  # free on public repos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Enable Hyper-V (required for Docker Desktop)
+        run: |
+          Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -All
+
+      - name: Start Docker service
+        run: |
+          Start-Service docker
+          docker info
+
+      - name: Build & test with Maven
+        run: mvnw.cmd -q test
